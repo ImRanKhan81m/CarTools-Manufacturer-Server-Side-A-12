@@ -25,6 +25,7 @@ async function run() {
         await client.connect();
         const productCollection = client.db("CarToolsManufacturer").collection("tools")
         const reviewCollection = client.db("CarToolsManufacturer").collection("review")
+        const orderCollection = client.db("CarToolsManufacturer").collection("order")
 
         // ==============================Tools Read/Get========================>>
 
@@ -32,6 +33,13 @@ async function run() {
             const services = await productCollection.find({}).toArray();
             res.send(services)
         })
+
+        app.get('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const service = await productCollection.findOne(query);
+            res.send(service);
+        }); 
 
         // =========================== ToolsCreate/Post==========================>>
 
@@ -84,6 +92,30 @@ async function run() {
             const result = await reviewCollection.insertOne(data);
             res.send(result)
         })
+
+
+        // =====================================================================>>
+        // =======================PRODUCT ORDER Read/Get=====================>>
+        // =====================================================================>>
+        app.get('/order', async (req, res) => {
+            const customer = req.query.customer;
+            console.log(customer);
+            const query = {customer: customer}
+            const services = await orderCollection.find(query).toArray();
+            res.send(services)
+        })
+
+        // =========================== Order Create/Post==========================>>
+
+        app.post('/order', async (req, res) => {
+
+            const data = req.body;
+            const result = await orderCollection.insertOne(data);
+            res.send(result)
+        })
+
+
+
 
     } finally {
     }
