@@ -26,6 +26,7 @@ async function run() {
         const productCollection = client.db("CarToolsManufacturer").collection("tools")
         const reviewCollection = client.db("CarToolsManufacturer").collection("review")
         const orderCollection = client.db("CarToolsManufacturer").collection("order")
+        const userCollection = client.db("CarToolsManufacturer").collection("users")
 
         // ==============================Tools Read/Get========================>>
 
@@ -39,7 +40,7 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const service = await productCollection.findOne(query);
             res.send(service);
-        }); 
+        });
 
         // =========================== ToolsCreate/Post==========================>>
 
@@ -100,7 +101,7 @@ async function run() {
         app.get('/order', async (req, res) => {
             const customer = req.query.customer;
             console.log(customer);
-            const query = {customer: customer}
+            const query = { customer: customer }
             const services = await orderCollection.find(query).toArray();
             res.send(services)
         })
@@ -113,6 +114,22 @@ async function run() {
             const result = await orderCollection.insertOne(data);
             res.send(result)
         })
+
+        // =====================================================================>>
+        // =============================USER PUT================================>>
+        // =====================================================================>>
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email: email };
+            const option = { upsert: true };
+            const updateDoc = {
+                $set: user
+            };
+            const result = await userCollection.updateOne(filter, updateDoc, option);
+            res.send(result)
+        })
+
 
 
 
