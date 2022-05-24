@@ -139,6 +139,18 @@ async function run() {
             res.send(user)
         })
 
+        // ==========================USER ADMIN put============================>>
+
+        app.put('/user/admin/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const updateDoc = {
+                $set: {role:'admin'}
+            };
+            const result = await userCollection.updateOne(filter, updateDoc);
+            res.send(result)
+        })
+
         // =============================USER PUT================================>>
 
         app.put('/user/:email', async (req, res) => {
@@ -153,8 +165,6 @@ async function run() {
             const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30d' })
             res.send({ result, token })
         })
-
-
 
 
 
