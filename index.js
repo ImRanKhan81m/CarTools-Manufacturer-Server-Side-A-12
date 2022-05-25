@@ -57,7 +57,7 @@ async function run() {
 
         // ==============================Tools Read/Get========================>>
 
-        app.get('/tools', async (req, res) => {
+        app.get('/tools',verifyJWT, verifyAdmin, async (req, res) => {
             const services = await productCollection.find({}).toArray();
             res.send(services)
         })
@@ -95,7 +95,7 @@ async function run() {
 
         // =============================Tools Delete==========================>>
 
-        app.delete("/delete-tools/:id", async (req, res) => {
+        app.delete("/delete-tools/:id",verifyJWT, verifyAdmin, async (req, res) => {
             const { id } = req.params;
             const query = { _id: ObjectId(id) };
             const result = await productCollection.deleteOne(query);
