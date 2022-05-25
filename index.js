@@ -42,6 +42,7 @@ async function run() {
         const reviewCollection = client.db("CarToolsManufacturer").collection("review")
         const orderCollection = client.db("CarToolsManufacturer").collection("order")
         const userCollection = client.db("CarToolsManufacturer").collection("users")
+        const userProfileCollection = client.db("CarToolsManufacturer").collection("profile")
 
         // ==============================Tools Read/Get========================>>
 
@@ -182,7 +183,20 @@ async function run() {
             res.send({ result, token })
         })
 
+        // ==========================USER PROFILE PUT===========================>>
 
+        app.put('/profile/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email: email };
+            const option = { upsert: true };
+            const updateDoc = {
+              $set: user
+            };
+            const result = await userProfileCollection.updateOne(filter, updateDoc, option);
+            const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '3d' });
+            res.send({ result, token })
+          })
 
     } finally {
     }
