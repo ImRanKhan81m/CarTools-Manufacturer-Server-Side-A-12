@@ -63,12 +63,12 @@ async function run() {
             const price = service.totalPrice;
             const amount = price * 100;
             const paymentIntent = await stripe.paymentIntents.create({
-              amount: amount,
-              currency: 'usd',
-              payment_method_types: ['card']
+                amount: amount,
+                currency: 'usd',
+                payment_method_types: ['card']
             });
             res.send({ clientSecret: paymentIntent.client_secret })
-          })
+        })
 
 
         // ==============================Tools Read/Get========================>>
@@ -141,6 +141,15 @@ async function run() {
         })
 
 
+        // =======================PRODUCT ORDER Delete=====================>>
+
+        app.delete("/deleteOrder/:id", verifyJWT, async (req, res) => {
+            const { id } = req.params;
+            const query = { _id: ObjectId(id) };
+            const result = await orderCollection.deleteOne(query);
+            res.send(result)
+        })
+
         // =======================PRODUCT ORDER Read/Get=====================>>
 
         app.get('/orders', verifyJWT, verifyAdmin, async (req, res) => {
@@ -181,19 +190,25 @@ async function run() {
         app.patch('/order/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const payment = req.body;
-            const filter = { _id: ObjectId(id)};
+            const filter = { _id: ObjectId(id) };
             const updatedDoc = {
-              $set: {
-                paid: true,
-                transactionId: payment.transactionId
-              }
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId
+                }
             }
-      
+
             const result = await paymentCollection.insertOne(payment)
             const updatedOrder = await orderCollection.updateOne(filter, updatedDoc);
             res.send(updatedOrder)
-          })
+        })
 
+        // =============================USER GET================================>>
+
+        app.get('/user', verifyJWT, async (req, res) => {
+            const user = await userCollection.find().toArray()
+            res.send(user)
+        })
         // =============================USER GET================================>>
 
         app.get('/user', verifyJWT, async (req, res) => {
