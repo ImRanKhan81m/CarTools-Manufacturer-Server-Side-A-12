@@ -57,7 +57,11 @@ async function run() {
 
         // ==============================Tools Read/Get========================>>
 
-        app.get('/tools',verifyJWT, verifyAdmin, async (req, res) => {
+        app.get('/tools',async (req, res) => {
+            const services = await productCollection.find({}).toArray();
+            res.send(services)
+        })
+        app.get('/all-tools',verifyJWT, verifyAdmin, async (req, res) => {
             const services = await productCollection.find({}).toArray();
             res.send(services)
         })
@@ -140,6 +144,13 @@ async function run() {
                 return res.status(403).send({ message: 'Forbidden Access' });
             }
 
+        })
+
+        app.get('/orderProduct/:id', async(req, res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const order = await orderCollection.findOne(query);
+            res.send(order)
         })
 
         // =========================== Order Create/Post==========================>>
